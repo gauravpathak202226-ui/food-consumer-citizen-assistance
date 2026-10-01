@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Citizen Assistance">
+<title>Food & Consumer Citizen Assistance</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans",sans-serif;background:#eef3f7;color:#17212b;-webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom)}
+header{background:#12355b;color:#fff;padding:18px 5%;display:flex;justify-content:space-between;align-items:center}
+.dept{font-size:22px;font-weight:700}.sub{margin-top:5px;opacity:.9}
+.lang{border:1px solid #fff;background:transparent;color:#fff;border-radius:8px;padding:9px 14px;font-size:15px}
+.container{max-width:900px;margin:28px auto;padding:0 16px}
+.card{background:#fff;border-radius:18px;padding:30px;box-shadow:0 6px 24px rgba(0,0,0,.09)}
+.hidden{display:none}
+.badge{display:inline-block;background:#e8f2ff;color:#12355b;padding:7px 11px;border-radius:20px;font-weight:700;font-size:13px}
+h1{color:#12355b}.intro{font-size:18px;line-height:1.5}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.big{min-height:145px;border:2px solid #d7e0e8;border-radius:15px;background:#fff;font-size:22px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.big:hover{border-color:#087f5b;transform:translateY(-2px)}
+.big.voice{background:#f0faf6}
+.inputbox{margin-top:25px;padding:20px;border:1px solid #dce3e8;border-radius:12px}
+textarea,input{width:100%;padding:14px;border:1px solid #aeb8c2;border-radius:9px;font-size:18px;margin-top:8px}
+textarea{min-height:120px;resize:vertical}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+button{cursor:pointer}
+.primary,.secondary{border:0;border-radius:9px;padding:13px 19px;font-size:17px}
+.primary{background:#087f5b;color:#fff}.secondary{background:#e9eef2;color:#17212b}
+.progress{height:10px;background:#e0e5e9;border-radius:20px;overflow:hidden}
+.progress div{height:100%;background:#087f5b;width:0}
+.step{margin-top:18px;color:#65727e;font-weight:700}
+.question{font-size:30px;font-weight:700;line-height:1.35;margin-top:12px;color:#12355b}
+.hint{color:#64707b;margin:8px 0 15px}
+.confirm{margin-top:22px;background:#f5f8fa;border-radius:10px;padding:14px}
+.status{min-height:24px;margin-top:12px;color:#555}
+.review-item{display:grid;grid-template-columns:250px 1fr;gap:15px;padding:13px 0;border-bottom:1px solid #e4e7ea}
+.review-key{font-weight:700;color:#52606d}.review-value{font-size:18px}
+.paper-head{text-align:center}.paper-head h1{font-size:22px}.paper-head h2{font-size:20px}
+.paper-section{margin-top:25px}.paper-section h3{border-bottom:1px solid #222;padding-bottom:5px}
+.paper-row{display:grid;grid-template-columns:240px 1fr;gap:15px;margin:11px 0}
+.signature{display:flex;justify-content:space-between;margin-top:90px}
+.print-actions{text-align:center;margin-top:25px}
+.small{font-size:14px;color:#667}
+@media(max-width:650px){
+.big{min-height:125px;padding:18px}.primary,.secondary,.choice{min-height:48px}.lang{min-height:44px}input,textarea{font-size:18px;min-height:50px}.container{padding:0 12px;margin:16px auto}.card{padding:20px}.actions{gap:12px}
+.actions{grid-template-columns:1fr}.question{font-size:24px}
+.review-item,.paper-row{grid-template-columns:1fr;gap:5px}
+.signature{display:block}.signature>div+div{margin-top:50px}
+}
+@media print{
+body{background:#fff}header,.print-actions{display:none}
+.container{max-width:none;margin:0;padding:0}.card{box-shadow:none;padding:0}
+.screen:not(#application){display:none!important}
+#application{display:block!important}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="dept">Food & Consumer Protection Department</div>
+    <div class="sub">Citizen Assistance & Application System</div>
+  </div>
+  <button id="langBtn" class="lang">English</button>
+</header>
+
+<main class="container">
+
+<section id="welcome" class="screen card">
+  <span class="badge">Citizen Help Desk</span>
+  <h1 id="welcomeTitle">आपकी क्या समस्या है?</h1>
+  <p id="welcomeText" class="intro">
+    आप बोलकर या टाइप करके बता सकते हैं। आपको आवेदन का नाम जानना जरूरी नहीं है।
+  </p>
+
+  <div class="actions">
+    <button class="big voice" id="voiceStart">
+      🎤<span id="voiceLabel">बोलकर बताएं</span>
+    </button>
+    <button class="big" id="typeStart">
+      ⌨️<span id="typeLabel">टाइप करें</span>
+    </button>
+    <button class="big" id="guidedStart">
+      👆<span id="guidedLabel">मुझसे सवाल पूछें</span>
+    </button>
+  </div>
+
+  <div id="inputBox" class="inputbox hidden">
+    <label id="inputLabel"><b>अपनी समस्या बताएं</b></label>
+    <textarea id="problemInput"
+      placeholder="उदाहरण: मेरा राशन नहीं मिला / मुझे नया राशन कार्ड बनवाना है"></textarea>
+    <div class="row">
+      <button class="secondary" id="problemMic">🎤 Voice / Dictate</button>
+      <button class="primary" id="problemContinue">आगे बढ़ें</button>
+    </div>
+    <div id="voiceStatus" class="status"></div>
+  </div>
+
+  <div id="iphoneHint" class="inputbox" style="margin-top:18px;background:#f7fbff">
+    <b>📱 iPhone tip:</b>
+    <span> Tap the microphone on the iPhone keyboard to dictate your answer in Hindi or English.</span>
+  </div>
+
+  <p class="small">
+    उदाहरण: “मुझे राशन कार्ड बनवाना है”, “इस महीने राशन नहीं मिला”, “मुझे कम अनाज मिला”
+  </p>
+</section>
+
+
+<section id="question" class="screen card hidden">
+  <div class="progress"><div id="progressBar"></div></div>
+  <div id="step" class="step"></div>
+  <div id="questionText" class="question"></div>
+  <div id="questionHint" class="hint"></div>
+
+  <div id="answerArea"></div>
+
+  <div class="confirm">
+    <b id="confirmText">उत्तर भरकर पुष्टि करें।</b>
+    <div class="row">
+      <button class="secondary" id="speakQuestion">🔊 दोबारा सुनें</button>
+      <button class="secondary" id="answerMic">🎤 बोलकर उत्तर दें</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <button class="secondary" id="backBtn">← वापस</button>
+    <button class="primary" id="nextBtn">सही है, आगे बढ़ें →</button>
+  </div>
+
+  <div id="questionStatus" class="status"></div>
+</section>
+
+
+<section id="review" class="screen card hidden">
+  <span class="badge">Final Review</span>
+  <h1>अपनी जानकारी जांचें</h1>
+  <p>कृपया आवेदन बनाने से पहले सभी जानकारी जांच लें।</p>
+  <div id="reviewContent"></div>
+  <div class="row">
+    <button class="secondary" id="reviewBack">← Edit</button>
+    <button class="primary" id="generateBtn">✓ पुष्टि करें और आवेदन बनाएं</button>
+  </div>
+</section>
+
+
+<section id="application" class="screen card hidden">
+
+<div id="paper">
+  <div class="paper-head">
+    <h1>FOOD & CONSUMER PROTECTION DEPARTMENT</h1>
+    <h2 id="paperTitle">Citizen Application</h2>
+    <p>Application Date: <span id="appDate"></span></p>
+  </div>
+  <hr>
+  <div id="paperBody"></div>
+
+  <div class="signature">
+    <div>Place: __________________</div>
+    <div>
+      Applicant Signature / Thumb Impression
+      <br><br>
+      __________________________
+    </div>
+  </div>
+</div>
+
+<div class="print-actions">
+  <button class="primary" id="printBtn">🖨 Print / Save as PDF</button>
+  <button class="secondary" id="newBtn">नया आवेदन</button>
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+/* =========================================================
+   FOOD & CONSUMER CITIZEN ASSISTANCE
+   SINGLE FILE FRONTEND
+   ========================================================= */
+
+let language = "hi";
+let recognition = null;
+
+const state = {
+  flow: null,
+  questions: [],
+  index: 0,
+  answers: {},
+  problem: ""
+};
+
+
+/* ---------------- TRANSLATION ---------------- */
+
+const T = {
+  hi:{
+    welcome:"आपकी क्या समस्या है?",
+    intro:"आप बोलकर या टाइप करके बता सकते हैं। आपको आवेदन का नाम जानना जरूरी नहीं है।",
+    speak:"बोलकर बताएं",
+    type:"टाइप करें",
+    guided:"मुझसे सवाल पूछें",
+    problem:"अपनी समस्या बताएं",
+    continue:"आगे बढ़ें",
+    repeat:"दोबारा सुनें",
+    voiceAnswer:"बोलकर उत्तर दें",
+    back:"← वापस",
+    next:"सही है, आगे बढ़ें →"
+  },
+  en:{
+    welcome:"How can we help you?",
+    intro:"You can speak or type. You do not need to know the application name.",
+    speak:"Speak",
+    type:"Type",
+    guided:"Ask me questions",
+    problem:"Tell us your problem",
+    continue:"Continue",
+    repeat:"Repeat",
+    voiceAnswer:"Answer by voice",
+    back:"← Back",
+    next:"Confirm & Continue →"
+  }
+};
+
+function t(k){
+  return T[language][k] || T.en[k] || k;
+}
+
+function applyLanguage(){
+  document.documentElement.lang=language;
+  document.getElementById("welcomeTitle").textContent=t("welcome");
+  document.getElementById("welcomeText").textContent=t("intro");
+  document.getElementById("voiceLabel").textContent=t("speak");
+  document.getElementById("typeLabel").textContent=t("type");
+  document.getElementById("guidedLabel").textContent=t("guided");
+  document.getElementById("inputLabel").innerHTML="<b>"+t("problem")+"</b>";
+  document.getElementById("problemContinue").textContent=t("continue");
+  document.getElementById("speakQuestion").textContent="🔊 "+t("repeat");
+  document.getElementById("answerMic").textContent="🎤 "+t("voiceAnswer");
+  document.getElementById("backBtn").textContent=t("back");
+  document.getElementById("nextBtn").textContent=t("next");
+  document.getElementById("langBtn").textContent=
+      language==="hi" ? "English" : "हिन्दी";
+}
+
+
+/* ---------------- APPLICATION FLOWS ---------------- */
+
+const COMMON = [
+
+ ["name",
+  "अपना पूरा नाम बताइए।",
+  "Please tell me your full name.",
+  "text"],
+
+ ["age",
+  "आपकी उम्र कितनी है?",
+  "What is your age?",
+  "number"],
+
+ ["dob",
+  "आपकी जन्म तिथि क्या है?",
+  "What is your date of birth?",
+  "date"],
+
+ ["fatherName",
+  "अपने पिता या पति का नाम बताइए।",
+  "Please tell me your father's or husband's name.",
+  "text"],
+
+ ["mobile",
+  "अपना 10 अंकों का मोबाइल नंबर बताइए।",
+  "Please tell me your 10 digit mobile number.",
+  "tel"],
+
+ ["address",
+  "अपना पूरा पता बताइए।",
+  "Please tell me your complete address.",
+  "text"]
+];
+
+
+const FLOWS = {
+
+ ration_card:{
+  title:"New Ration Card Application",
+  keywords:[
+   "ration card",
+   "राशन कार्ड",
+   "नया राशन कार्ड",
+   "ration"
+  ],
+  questions:[
+   ["familyMembers",
+    "आपके परिवार में कितने सदस्य हैं?",
+    "How many members are in your family?",
+    "number"],
+
+   ["aadhaar",
+    "अपना 12 अंकों का आधार नंबर बताइए।",
+    "Please provide your 12 digit Aadhaar number.",
+    "text"],
+
+   ["reason",
+    "नया राशन कार्ड बनवाने का कारण बताइए।",
+    "Why do you want a new ration card?",
+    "text"]
+  ]
+ },
+
+ pds_not_received:{
+  title:"PDS Food Grain Not Received",
+  keywords:[
+   "pds not received",
+   "ration not received",
+   "राशन नहीं मिला",
+   "अनाज नहीं मिला",
+   "pds",
+   "food grain"
+  ],
+  questions:[
+   ["rationNumber",
+    "अपना राशन कार्ड नंबर बताइए।",
+    "Please tell me your ration card number.",
+    "text"],
+
+   ["month",
+    "किस महीने का राशन नहीं मिला?",
+    "For which month did you not receive ration?",
+    "text"],
+
+   ["dealer",
+    "राशन दुकानदार / उचित मूल्य दुकान का नाम बताइए।",
+    "Please tell me your fair price shop or dealer name.",
+    "text"]
+  ]
+ },
+
+ less_grain:{
+  title:"Less Food Grain Received",
+  keywords:[
+   "less grain",
+   "less ration",
+   "कम राशन",
+   "कम अनाज",
+   "कम गेहूं",
+   "कम चावल"
+  ],
+  questions:[
+   ["rationNumber",
+    "अपना राशन कार्ड नंबर बताइए।",
+    "Please tell me your ration card number.",
+    "text"],
+
+   ["expectedQuantity",
+    "आपको कितना राशन मिलना चाहिए था?",
+    "How much ration should you have received?",
+    "text"],
+
+   ["receivedQuantity",
+    "आपको वास्तव में कितना राशन मिला?",
+    "How much ration did you actually receive?",
+    "text"],
+
+   ["dealer",
+    "राशन दुकानदार का नाम बताइए।",
+    "Please tell me the dealer's name.",
+    "text"]
+  ]
+ },
+
+ ration_problem:{
+  title:"Ration Card Problem / Correction",
+  keywords:[
+   "ration card problem",
+   "ration card issue",
+   "राशन कार्ड समस्या",
+   "राशन कार्ड में समस्या",
+   "correction"
+  ],
+  questions:[
+   ["rationNumber",
+    "अपना राशन कार्ड नंबर बताइए।",
+    "Please tell me your ration card number.",
+    "text"],
+
+   ["problem",
+    "राशन कार्ड की समस्या बताइए।",
+    "Please explain your ration card problem.",
+    "text"]
+  ]
+ }
+};
+
+
+/* ---------------- SCREEN CONTROL ---------------- */
+
+function show(id){
+ ["welcome","question","review","application"]
+ .forEach(x=>{
+   document.getElementById(x)
+   .classList.toggle("hidden",x!==id);
+ });
+}
+
+
+/* ---------------- VOICE ---------------- */
+
+function setupVoice(){
+
+ const SR =
+   window.SpeechRecognition ||
+   window.webkitSpeechRecognition;
+
+ if(!SR){
+   recognition = null;
+   return false;
+ }
+
+ recognition = new SR();
+ recognition.continuous = false;
+ recognition.interimResults = false;
+
+ return true;
+}
+
+function listen(callback,status){
+
+ if(!recognition && !setupVoice()){
+
+   status.textContent =
+   "Voice recognition is not supported in this browser. Please type.";
+
+   return;
+ }
+
+ recognition.lang =
+   language==="hi" ? "hi-IN" : "en-IN";
+
+ status.textContent =
+   language==="hi"
+   ? "सुन रहा है... बोलिए..."
+   : "Listening... speak now";
+
+ try{
+   recognition.start();
+ }catch(e){}
+
+ recognition.onresult=function(event){
+
+   const text =
+     event.results[0][0].transcript;
+
+   callback(text);
+
+   status.textContent =
+     language==="hi"
+     ? "आवाज़ प्राप्त हुई"
+     : "Voice captured";
+ };
+
+ recognition.onerror=function(event){
+
+   status.textContent =
+     "Voice error: "+event.error;
+ };
+}
+
+function speak(text){
+
+ if(!window.speechSynthesis) return;
+
+ speechSynthesis.cancel();
+
+ const u =
+   new SpeechSynthesisUtterance(text);
+
+ u.lang =
+   language==="hi" ? "hi-IN" : "en-IN";
+
+ u.rate=.9;
+
+ speechSynthesis.speak(u);
+}
+
+
+/* ---------------- FLOW DETECTION ---------------- */
+
+function detectFlow(text){
+
+ const s=text.toLowerCase();
+
+ for(const [key,flow] of Object.entries(FLOWS)){
+
+   for(const keyword of flow.keywords){
+
+     if(s.includes(keyword.toLowerCase()))
+       return key;
+   }
+ }
+
+ return null;
+}
+
+
+/* ---------------- START ---------------- */
+
+function startInput(){
+
+ document.getElementById("inputBox")
+ .classList.remove("hidden");
+
+ document.getElementById("problemInput")
+ .focus();
+}
+
+function startGuided(){
+
+ state.problem="";
+ state.flow=null;
+ state.index=0;
+ state.answers={};
+
+ startFlow(null);
+}
+
+function beginFromText(){
+
+ const text =
+ document.getElementById("problemInput")
+ .value.trim();
+
+ if(!text){
+
+   alert(
+     language==="hi"
+     ? "कृपया अपनी समस्या बताएं।"
+     : "Please tell us your problem."
+   );
+
+   return;
+ }
+
+ state.problem=text;
+
+ const flow=detectFlow(text);
+
+ if(flow){
+
+   startFlow(flow);
+
+ }else{
+
+   alert(
+    language==="hi"
+    ? "मैं समस्या समझ नहीं पाया। कृपया राशन कार्ड, राशन नहीं मिला या कम राशन जैसी बात बताएं।"
+    : "I could not identify the issue. Please mention ration card, ration not received, or less ration."
+   );
+ }
+}
+
+
+/* ---------------- GUIDED QUESTIONS ---------------- */
+
+function startFlow(flow){
+
+ state.flow=flow;
+ state.index=0;
+ state.answers={};
+
+ /*
+   If no flow is selected, first ask guided questions.
+ */
+ if(!flow){
+
+   state.questions=[
+    ["hasRation",
+     "क्या आपके पास राशन कार्ड है?",
+     "Do you have a ration card?",
+     "yesno"],
+
+    ["receivedThisMonth",
+     "क्या आपको इस महीने राशन मिला?",
+     "Did you receive ration this month?",
+     "yesno"],
+
+    ["fullQuantity",
+     "क्या आपको पूरा राशन मिला?",
+     "Did you receive the full quantity of ration?",
+     "yesno"]
+   ];
+
+ }else{
+
+   state.questions=[
+    ...COMMON,
+    ...(FLOWS[flow].questions||[])
+   ];
+ }
+
+ show("question");
+ renderQuestion();
+}
+
+
+/* ---------------- QUESTION RENDER ---------------- */
+
+function renderQuestion(){
+
+ const q =
+   state.questions[state.index];
+
+ document.getElementById("step").textContent =
+   `Step ${state.index+1} of ${state.questions.length}`;
+
+ document.getElementById("progressBar").style.width =
+   ((state.index)/state.questions.length*100)+"%";
+
+ document.getElementById("questionText").textContent =
+   language==="hi" ? q[1] : q[2];
+
+ document.getElementById("questionHint").textContent =
+   language==="hi" ? q[2] : q[1];
+
+ const area =
+   document.getElementById("answerArea");
+
+ area.innerHTML="";
+
+ if(q[3]==="yesno"){
+
+   const yes =
+     document.createElement("button");
+
+   yes.className="choice";
+   yes.textContent =
+     language==="hi" ? "हाँ" : "Yes";
+
+   yes.onclick=()=>{
+     area.dataset.value="yes";
+     highlightChoice(yes,no);
+   };
+
+   const no =
+     document.createElement("button");
+
+   no.className="choice";
+   no.textContent =
+     language==="hi" ? "नहीं" : "No";
+
+   no.onclick=()=>{
+     area.dataset.value="no";
+     highlightChoice(no,yes);
+   };
+
+   area.appendChild(yes);
+   area.appendChild(no);
+
+   if(state.answers[q[0]])
+     area.dataset.value=state.answers[q[0]];
+
+ }else{
+
+   let input =
+     document.createElement("input");
+
+   input.id="answer";
+   input.type=q[3]==="date" ? "date" :
+             q[3]==="number" ? "number" :
+             q[3]==="tel" ? "tel" : "text";
+
+   input.autocomplete="off";
+
+   if(state.answers[q[0]])
+     input.value=state.answers[q[0]];
+
+   area.appendChild(input);
+   input.focus();
+ }
+
+ document.getElementById("confirmText").textContent =
+   language==="hi"
+   ? "उत्तर भरकर 'सही है, आगे बढ़ें' दबाएं।"
+   : "Enter the answer and press Confirm & Continue.";
+
+ speak(language==="hi" ? q[1] : q[2]);
+}
+
+function highlightChoice(selected,other){
+
+ selected.style.borderColor="#087f5b";
+ selected.style.background="#e8f7f1";
+
+ other.style.borderColor="#d4dde5";
+ other.style.background="#fff";
+}
+
+
+/* ---------------- SAVE ANSWER ---------------- */
+
+function saveCurrent(){
+
+ const q =
+   state.questions[state.index];
+
+ let value="";
+
+ if(q[3]==="yesno"){
+
+   value =
+     document.getElementById("answerArea")
+     .dataset.value || "";
+
+ }else{
+
+   value =
+     document.getElementById("answer")
+     .value.trim();
+ }
+
+ if(!value){
+
+   alert(
+     language==="hi"
+     ? "कृपया उत्तर दें।"
+     : "Please provide an answer."
+   );
+
+   return;
+ }
+
+ if(q[0]==="mobile" &&
+    !/^[0-9]{10}$/.test(value)){
+
+   alert("Please enter a valid 10 digit mobile number.");
+   return;
+ }
+
+ if(q[0]==="aadhaar" &&
+    !/^[0-9]{12}$/.test(value.replace(/\s/g,""))){
+
+   alert("Please enter a valid 12 digit Aadhaar number.");
+   return;
+ }
+
+ const confirmed =
+   confirm(
+    (language==="hi"
+     ? "आपने कहा: "
+     : "You entered: ")
+    +value+
+    "\n\n"+
+    (language==="hi"
+     ? "क्या यह सही है?"
+     : "Is this correct?")
+   );
+
+ if(!confirmed) return;
+
+ state.answers[q[0]]=value;
+
+ /*
+   Guided classification:
+   hasRation = yes
+   receivedThisMonth = no
+   => PDS not received
+   fullQuantity = no
+   => less grain
+ */
+ if(!state.flow && state.index===2){
+
+   if(state.answers.receivedThisMonth==="no"){
+
+     state.flow="pds_not_received";
+
+   }else if(state.answers.fullQuantity==="no"){
+
+     state.flow="less_grain";
+
+   }else{
+
+     state.flow="ration_problem";
+   }
+
+   /*
+     Continue with common details.
+   */
+   state.questions=[
+     ...COMMON,
+     ...(FLOWS[state.flow].questions||[])
+   ];
+
+   state.index=0;
+
+   renderQuestion();
+   return;
+ }
+
+ state.index++;
+
+ if(state.index < state.questions.length){
+
+   renderQuestion();
+
+ }else{
+
+   showReview();
+ }
+}
+
+
+/* ---------------- VOICE ANSWER ---------------- */
+
+function voiceAnswer(){
+
+ listen(
+   text=>{
+
+     const q=state.questions[state.index];
+
+     if(q[3]==="yesno"){
+
+       const area=
+         document.getElementById("answerArea");
+
+       const s=text.toLowerCase();
+
+       if(
+        s.includes("हाँ") ||
+        s.includes("हां") ||
+        s.includes("yes")
+       ){
+
+         area.dataset.value="yes";
+
+       }else if(
+        s.includes("नहीं") ||
+        s.includes("नही") ||
+        s.includes("no")
+       ){
+
+         area.dataset.value="no";
+
+       }else{
+
+         alert(
+          "कृपया हाँ या नहीं बोलें।"
+         );
+         return;
+       }
+
+     }else{
+
+       document.getElementById("answer").value=text;
+     }
+
+     speak(
+       language==="hi"
+       ? "आपने कहा: "+text
+       : "You said: "+text
+     );
+
+   },
+
+   document.getElementById("questionStatus")
+ );
+}
+
+
+/* ---------------- REVIEW ---------------- */
+
+function showReview(){
+
+ show("review");
+
+ let html="";
+
+ state.questions.forEach(q=>{
+
+   const value =
+     state.answers[q[0]] || "";
+
+   html+=
+    `<div class="review-item">
+       <div class="review-key">
+         ${esc(q[language==="hi"?1:2])}
+       </div>
+       <div class="review-value">
+         ${esc(value)}
+       </div>
+     </div>`;
+ });
+
+ document.getElementById("reviewContent")
+ .innerHTML=html;
+}
+
+
+/* ---------------- GENERATE APPLICATION ---------------- */
+
+function generate(){
+
+ show("application");
+
+ document.getElementById("appDate")
+ .textContent =
+ new Date().toLocaleDateString("en-IN");
+
+ document.getElementById("paperTitle")
+ .textContent =
+ FLOWS[state.flow]?.title ||
+ "Citizen Application";
+
+ let html=
+ `<div class="paper-section">
+    <h3>Applicant Details</h3>`;
+
+ COMMON.forEach(q=>{
+   html+=paperRow(
+     q[1],
+     state.answers[q[0]]
+   );
+ });
+
+ html+="</div>";
+
+ html+=
+ `<div class="paper-section">
+    <h3>Application / Grievance Details</h3>`;
+
+ (FLOWS[state.flow]?.questions||[])
+ .forEach(q=>{
+   html+=paperRow(
+     q[1],
+     state.answers[q[0]]
+   );
+ });
+
+ html+="</div>";
+
+ html+=
+ `<div class="paper-section">
+    <h3>Request</h3>
+    <p>
+      I request the concerned authority to kindly
+      examine the above matter and take necessary
+      action as per applicable rules.
+    </p>
+  </div>`;
+
+ document.getElementById("paperBody")
+ .innerHTML=html;
+}
+
+
+function paperRow(label,value){
+
+ return `
+ <div class="paper-row">
+   <strong>${esc(label)}</strong>
+   <span>${esc(value)}</span>
+ </div>`;
+}
+
+
+/* ---------------- SECURITY ---------------- */
+
+function esc(value){
+
+ return String(value ?? "")
+ .replace(/[&<>"']/g,
+ c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+ }[c]));
+}
+
+
+/* ---------------- BUTTONS ---------------- */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+ applyLanguage();
+ setupVoice();
+
+ document.getElementById("langBtn").onclick=()=>{
+   language =
+     language==="hi" ? "en" : "hi";
+
+   applyLanguage();
+   setupVoice();
+ };
+
+ document.getElementById("voiceStart").onclick=()=>{
+   startInput();
+   setTimeout(()=>{
+     listen(
+       text=>{
+         document.getElementById("problemInput")
+         .value=text;
+       },
+       document.getElementById("voiceStatus")
+     );
+   },100);
+ };
+
+ document.getElementById("typeStart").onclick=
+   startInput;
+
+ document.getElementById("guidedStart").onclick=
+   startGuided;
+
+ document.getElementById("problemMic").onclick=()=>{
+   listen(
+     text=>{
+       document.getElementById("problemInput")
+       .value=text;
+     },
+     document.getElementById("voiceStatus")
+   );
+ };
+
+ document.getElementById("problemContinue").onclick=
+   beginFromText;
+
+ document.getElementById("answerMic").onclick=
+   voiceAnswer;
+
+ document.getElementById("speakQuestion").onclick=()=>{
+   const q=state.questions[state.index];
+   speak(language==="hi"?q[1]:q[2]);
+ };
+
+ document.getElementById("nextBtn").onclick=
+   saveCurrent;
+
+ document.getElementById("backBtn").onclick=()=>{
+   if(state.index>0){
+     state.index--;
+     renderQuestion();
+   }else{
+     show("welcome");
+   }
+ };
+
+ document.getElementById("reviewBack").onclick=()=>{
+   show("question");
+   renderQuestion();
+ };
+
+ document.getElementById("generateBtn").onclick=
+   generate;
+
+ document.getElementById("printBtn").onclick=()=>{
+   window.print();
+ };
+
+ document.getElementById("newBtn").onclick=()=>{
+   location.reload();
+ };
+
+});
+</script>
+
+</body>
+</html>
