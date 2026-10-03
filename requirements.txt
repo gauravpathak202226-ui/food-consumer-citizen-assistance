@@ -1,0 +1,6 @@
+streamlit
+SpeechRecognition
+gTTS
+reportlab
+
+Pillow
